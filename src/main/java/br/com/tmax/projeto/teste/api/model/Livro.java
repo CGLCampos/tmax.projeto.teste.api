@@ -1,14 +1,26 @@
 package br.com.tmax.projeto.teste.api.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
+@Entity
 public class Livro {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String titulo;
 	private String autor;
 	private String edicao;
 	private String editora;
 	private String dataPublicacao;
+	@ManyToOne
 	private Categoria categoria;
+	@ManyToOne
+	private Reserva reserva;
 
 	public Long getId() {
 		return id;
@@ -66,6 +78,12 @@ public class Livro {
 		this.categoria = categoria;
 	}
 
-	// private boolean estaReservado = false;
+	public Reserva getReserva() {
+		return reserva;
+	}
+
+	public void setReserva(Reserva reserva) {
+		this.reserva = reserva;
+	}
 
 }

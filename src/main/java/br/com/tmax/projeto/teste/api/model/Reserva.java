@@ -1,15 +1,31 @@
 package br.com.tmax.projeto.teste.api.model;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+@Entity
 public class Reserva {
 
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private Calendar dataReserva;
+	@Temporal(TemporalType.TIMESTAMP)
+	private Calendar dataReserva = Calendar.getInstance();
+	@Temporal(TemporalType.TIMESTAMP)
 	private Calendar dataDevolucao;
+	@ManyToOne
 	private Aluno aluno;
-	private List<Livro> livros;
+	@OneToMany(mappedBy = "reserva")
+	private List<Livro> livros = new ArrayList<>();
 
 	public Long getId() {
 		return id;
