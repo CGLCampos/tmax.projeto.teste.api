@@ -7,15 +7,15 @@ import br.com.tmax.projeto.teste.api.model.Categoria;
 import br.com.tmax.projeto.teste.api.model.Livro;
 import br.com.tmax.projeto.teste.api.repository.CategoriaRepository;
 
-public class LivroCadastroForm {
+public class LivroAtualizaForm {
 
 	@NotNull
 	@NotEmpty
 	private String titulo;
-	private String autor = "Não informado";
-	private String edicao = "Não informado";
-	private String editora = "Não informado";
-	private String dataPublicacao = "Não informado";
+	private String autor;
+	private String edicao;
+	private String editora;
+	private String dataPublicacao;
 	@NotNull
 	@NotEmpty
 	private Long idCategoria;
@@ -68,9 +68,11 @@ public class LivroCadastroForm {
 		this.idCategoria = idCategoria;
 	}
 
-	public Livro converter(CategoriaRepository categoriaRepository) {
-		Categoria categoria = categoriaRepository.findById(idCategoria).get();
-		Livro livro = new Livro();
+	public Livro converter(Livro livro, CategoriaRepository categoriaRepository) {
+		System.out.println("ID CATEGORIA" + idCategoria);
+		Categoria categoria = categoriaRepository.findById(this.idCategoria).get();
+		
+
 		livro.setTitulo(this.titulo);
 		livro.setAutor(this.autor);
 		livro.setEdicao(this.edicao);

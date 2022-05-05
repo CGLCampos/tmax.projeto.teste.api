@@ -1,6 +1,7 @@
 package br.com.tmax.projeto.teste.api.model;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,7 +18,7 @@ public class Livro {
 	private String edicao;
 	private String editora;
 	private String dataPublicacao;
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Categoria categoria;
 	@ManyToOne
 	private Reserva reserva;

@@ -3,6 +3,8 @@ package br.com.tmax.projeto.teste.api.controller.dto;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+
 import br.com.tmax.projeto.teste.api.model.Livro;
 
 public class LivroDTO {
@@ -65,8 +67,8 @@ public class LivroDTO {
 		return reservado;
 	}
 	
-	public static List<LivroDTO> converter(List<Livro> livros) {
-		return livros.stream().map(LivroDTO::new).collect(Collectors.toList());
+	public static Page<LivroDTO> converter(Page<Livro> livros) {
+		return livros.map(LivroDTO::new);
 	}
 
 }
