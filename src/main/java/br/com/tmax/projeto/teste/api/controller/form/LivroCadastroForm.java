@@ -13,11 +13,10 @@ public class LivroCadastroForm {
 	@NotEmpty
 	private String titulo;
 	private String autor = "Não informado";
-	private String edicao = "Não informado";
+	private String idioma = "Não informado";
 	private String editora = "Não informado";
 	private String dataPublicacao = "Não informado";
 	@NotNull
-	@NotEmpty
 	private Long idCategoria;
 
 	public String getTitulo() {
@@ -36,12 +35,12 @@ public class LivroCadastroForm {
 		this.autor = autor;
 	}
 
-	public String getEdicao() {
-		return edicao;
+	public String getIdioma() {
+		return idioma;
 	}
 
-	public void setEdicao(String edicao) {
-		this.edicao = edicao;
+	public void setIdioma(String idioma) {
+		this.idioma = idioma;
 	}
 
 	public String getEditora() {
@@ -69,11 +68,12 @@ public class LivroCadastroForm {
 	}
 
 	public Livro converter(CategoriaRepository categoriaRepository) {
+		System.out.println("ID DA CATEGORIA: " + idCategoria);
 		Categoria categoria = categoriaRepository.findById(idCategoria).get();
 		Livro livro = new Livro();
 		livro.setTitulo(this.titulo);
 		livro.setAutor(this.autor);
-		livro.setEdicao(this.edicao);
+		livro.setIdioma(this.idioma);
 		livro.setEditora(this.editora);
 		livro.setDataPublicacao(this.dataPublicacao);
 		livro.setCategoria(categoria);

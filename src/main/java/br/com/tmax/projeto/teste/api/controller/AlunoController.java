@@ -40,7 +40,7 @@ public class AlunoController {
 	
 	@GetMapping
 	public Page<AlunoDTO> listar(
-			@PageableDefault(page=0, size=10, sort="id", direction=Direction.ASC) Pageable paginacao) {
+			@PageableDefault(sort="nome") Pageable paginacao) {
 		Page<Aluno> alunos = alunoRepository.findAll(paginacao);
 		return AlunoDTO.converter(alunos);
 	}

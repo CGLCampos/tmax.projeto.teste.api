@@ -4,29 +4,22 @@ import org.springframework.data.domain.Page;
 
 import br.com.tmax.projeto.teste.api.model.Livro;
 
-public class LivroDTO {
+public class LivroReservadoDTO {
 
 	private Long id;
 	private String titulo;
 	private String autor;
-	private String idioma;
 	private String editora;
-	private String dataPublicacao;
 	private String nomeCategoria;
-	private boolean reservado;
 	
 	
-	public LivroDTO(Livro livro) {
+	public LivroReservadoDTO(Livro livro) {
 		super();
 		this.id = livro.getId();
 		this.titulo = livro.getTitulo();
 		this.autor = livro.getAutor();
-		this.idioma = livro.getIdioma();
 		this.editora = livro.getEditora();
-		this.dataPublicacao = livro.getDataPublicacao();
 		this.nomeCategoria = livro.getCategoria().getNome();
-		this.reservado = livro.estaReservado();
-		
 	}
 
 	public Long getId() {
@@ -41,28 +34,16 @@ public class LivroDTO {
 		return autor;
 	}
 
-	public String getIdioma() {
-		return idioma;
-	}
-
 	public String getEditora() {
 		return editora;
-	}
-
-	public String getDataPublicacao() {
-		return dataPublicacao;
 	}
 
 	public String getCategoria() {
 		return nomeCategoria;
 	}
-
-	public boolean isReservado() {
-		return reservado;
-	}
 	
-	public static Page<LivroDTO> converter(Page<Livro> livros) {
-		return livros.map(LivroDTO::new);
+	public static Page<LivroReservadoDTO> converter(Page<Livro> livros) {
+		return livros.map(LivroReservadoDTO::new);
 	}
 
 }

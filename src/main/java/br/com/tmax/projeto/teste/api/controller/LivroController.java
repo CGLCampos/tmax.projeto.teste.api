@@ -95,11 +95,11 @@ public class LivroController {
 			return ResponseEntity.notFound().build();
 		}	
 		if (optional.get().getReserva() != null) {
-			String msg = "O livro está reservado e não pode ser removido";
+			String msg = "O livro está reservado e não pode ser removido.";
 			return ResponseEntity.badRequest().body(msg);
 		}
 		
 		livroRepository.deleteById(id);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok("Livro removido com sucesso.");
 	}
 }

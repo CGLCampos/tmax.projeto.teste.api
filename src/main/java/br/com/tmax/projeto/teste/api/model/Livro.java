@@ -15,13 +15,23 @@ public class Livro {
 	private Long id;
 	private String titulo;
 	private String autor;
-	private String edicao;
+	private String idioma;
 	private String editora;
 	private String dataPublicacao;
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Categoria categoria;
-	@ManyToOne
+
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Reserva reserva;
+
+	public boolean estaReservado() {
+		return this.getReserva() != null;
+	}
+
+	public void devolver() {
+		this.reserva = null;
+	}
 
 	public Long getId() {
 		return id;
@@ -47,12 +57,12 @@ public class Livro {
 		this.autor = autor;
 	}
 
-	public String getEdicao() {
-		return edicao;
+	public String getIdioma() {
+		return idioma;
 	}
 
-	public void setEdicao(String edicao) {
-		this.edicao = edicao;
+	public void setIdioma(String idioma) {
+		this.idioma = idioma;
 	}
 
 	public String getEditora() {
