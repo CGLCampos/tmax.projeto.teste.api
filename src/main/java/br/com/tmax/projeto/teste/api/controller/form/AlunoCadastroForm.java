@@ -6,7 +6,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import br.com.tmax.projeto.teste.api.model.Aluno;
+import br.com.tmax.projeto.teste.api.model.Perfil;
 import br.com.tmax.projeto.teste.api.util.DateUtil;
 
 public class AlunoCadastroForm {
@@ -50,13 +53,14 @@ public class AlunoCadastroForm {
 	public String getSenha() {
 		return senha;
 	}
-	public Aluno converter() {
+	public Aluno converter(Perfil perfil) {
 		Aluno aluno = new Aluno();
 		aluno.setNome(this.nome);
 		aluno.setDataNascimento(DateUtil.stringToLocalDate(this.dataNascimento));
 		aluno.setTurma(this.turma);
 		aluno.setEmail(this.email);
-		aluno.setSenha(this.senha);
+		aluno.setSenha(new BCryptPasswordEncoder().encode(this.senha));
+		aluno.getPerfis().add(perfil);
 		return aluno;
 	}
 	

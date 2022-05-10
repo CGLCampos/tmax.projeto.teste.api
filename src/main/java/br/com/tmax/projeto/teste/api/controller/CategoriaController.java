@@ -51,11 +51,11 @@ public class CategoriaController {
 	@CacheEvict(value="listaCategorias", allEntries = true)
 	public ResponseEntity<?> remover(@PathVariable Long id) {
 		Optional<Categoria> optional = categoriaRepository.findById(id);
-		if (optional.isPresent()) {
-			categoriaRepository.deleteById(id);
-			return ResponseEntity.ok().build();
+		if (!optional.isPresent()) {
+			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.notFound().build();
+		categoriaRepository.deleteById(id);
+		return ResponseEntity.ok().build();
 	}
 
 }

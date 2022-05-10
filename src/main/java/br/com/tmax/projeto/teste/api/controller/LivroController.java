@@ -63,10 +63,10 @@ public class LivroController {
 	@GetMapping("/{id}")
 	public ResponseEntity<LivroDTO> mostrar(@PathVariable Long id) {
 		Optional<Livro> optional = livroRepository.findById(id);
-		if (optional.isPresent()) {
-			return ResponseEntity.ok(new LivroDTO(optional.get()));
+		if (!optional.isPresent()) {
+			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(new LivroDTO(optional.get()));
 	}
 
 	@PutMapping("/{id}")
@@ -77,12 +77,11 @@ public class LivroController {
 			UriComponentsBuilder uriBuilder) {
 
 		Optional<Livro> optional = livroRepository.findById(id);
-		if (optional.isPresent()) {
-			Livro livro = form.converter(optional.get(), categoriaRepository);
-			return ResponseEntity.ok(new LivroDTO(livro));
-		} else {
+		if (!optional.isPresent()) {
 			return ResponseEntity.notFound().build();
-		}
+		} 
+		Livro livro = form.converter(optional.get(), categoriaRepository);
+		return ResponseEntity.ok(new LivroDTO(livro));
 
 	}
 

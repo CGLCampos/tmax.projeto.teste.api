@@ -61,10 +61,10 @@ public class ReservaController {
 	@GetMapping("/{id}")
 	public ResponseEntity<ReservaDTO> mostrar(@PathVariable Long id) {
 		Optional<Reserva> optional = reservaRepository.findById(id);
-		if(optional.isPresent()) {
-			return ResponseEntity.ok(new ReservaDTO(optional.get()));
+		if(!optional.isPresent()) {
+			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(new ReservaDTO(optional.get()));
 	}
 	
 	@DeleteMapping("/{id}")

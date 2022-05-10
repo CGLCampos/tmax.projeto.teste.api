@@ -11,7 +11,8 @@ import javax.persistence.PrimaryKeyJoinColumn;
 @Entity
 @PrimaryKeyJoinColumn(name="idPessoa")
 public class Aluno extends Usuario{
-
+	private static final long serialVersionUID = 1L;
+	
 	private String nome;
 	private LocalDate dataNascimento;
 	private String turma;
