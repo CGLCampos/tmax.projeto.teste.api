@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.tmax.projeto.teste.api.config.validation.ErroFormularioDTO;
+import br.com.tmax.projeto.teste.api.controller.dto.MensagemErroDTO;
 import br.com.tmax.projeto.teste.api.controller.dto.UsuarioDTO;
 import br.com.tmax.projeto.teste.api.controller.form.UsuarioAtualizaSenhaForm;
 import br.com.tmax.projeto.teste.api.model.Usuario;
@@ -28,34 +29,44 @@ public class UsuarioController {
 
 	@Autowired
 	private UsuarioRepository usuarioRepository;
-		
+
 	@GetMapping("/{id}")
-	public ResponseEntity<UsuarioDTO> mostrarUsuario(@PathVariable Long id) {
-		Optional<Usuario> optional = usuarioRepository.findById(id);
-		if(!optional.isPresent()) {
-			return ResponseEntity.notFound().build();
+	public ResponseEntity<?> mostrarUsuario(@PathVariable Long id) {
+		try {
+
+			Optional<Usuario> optional = usuarioRepository.findById(id);
+			if (!optional.isPresent()) {
+				return ResponseEntity.notFound().build();
+			}
+			return ResponseEntity.ok(new UsuarioDTO(optional.get()));
+
+		} catch (Throwable e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(new MensagemErroDTO(e.getMessage()));
 		}
-		return ResponseEntity.ok(new UsuarioDTO(optional.get()));
 	}
-	
+
 	@PutMapping("/{id}")
 	@Transactional
-	public ResponseEntity<?> atualizarSenha(
-			@PathVariable Long id, 
-			@RequestBody @Valid UsuarioAtualizaSenhaForm form, 
+	public ResponseEntity<?> atualizarSenha(@PathVariable Long id, @RequestBody @Valid UsuarioAtualizaSenhaForm form,
 			UriComponentsBuilder uriBuilder) {
-		
-		Optional<Usuario> optional = usuarioRepository.findById(id);
-		if(!optional.isPresent()) {
-			return ResponseEntity.notFound().build();
+		try {
+
+			Optional<Usuario> optional = usuarioRepository.findById(id);
+			if (!optional.isPresent()) {
+				return ResponseEntity.notFound().build();
+			}
+
+			if (!new BCryptPasswordEncoder().matches(form.getSenhaAnterior(), optional.get().getSenha())) {
+				return ResponseEntity.badRequest().body(new ErroFormularioDTO("senha", "Senha anterior não é a mesma"));
+			}
+
+			Usuario usuario = form.converter(optional.get());
+			return ResponseEntity.ok(new UsuarioDTO(usuario));
+
+		} catch (Throwable e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(new MensagemErroDTO(e.getMessage()));
 		}
-		
-		if(!new BCryptPasswordEncoder().matches(form.getSenhaAnterior(), optional.get().getSenha())) {
-			return ResponseEntity.badRequest()
-					.body(new ErroFormularioDTO("senha", "Senha anterior não é a mesma"));
-		}
-		
-		Usuario usuario = form.converter(optional.get());
-		return ResponseEntity.ok(new UsuarioDTO(usuario));
 	}
 }

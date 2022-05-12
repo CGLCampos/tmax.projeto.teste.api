@@ -47,23 +47,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 		.antMatchers(HttpMethod.POST, "/auth").permitAll()
-		//autorização para livros
-		.antMatchers(HttpMethod.POST, "/livros").hasRole("ADMIN")
-		.antMatchers(HttpMethod.PUT, "/livros/*").hasRole("ADMIN")
-		.antMatchers(HttpMethod.DELETE, "/livros/*").hasRole("ADMIN")
-		//autorização para categorias
-		.antMatchers(HttpMethod.GET, "/categorias").hasRole("ADMIN")
-		.antMatchers(HttpMethod.POST, "/categorias").hasRole("ADMIN")
-		.antMatchers(HttpMethod.DELETE, "/categorias/*").hasRole("ADMIN")
-		//autorização para alunos
-		.antMatchers(HttpMethod.GET, "/alunos").hasRole("ADMIN")
-		.antMatchers(HttpMethod.POST, "/alunos").hasRole("ADMIN")
-		.antMatchers(HttpMethod.PUT, "/alunos/*").hasRole("ADMIN")
-		.antMatchers(HttpMethod.DELETE, "/alunos/*").hasRole("ADMIN")
-		//autorização para reservas
-		.antMatchers(HttpMethod.GET, "/reservas").hasRole("ADMIN")
-		.antMatchers(HttpMethod.DELETE, "/reservas/*").hasRole("ADMIN")
-		.anyRequest().authenticated()
+		.antMatchers(HttpMethod.POST, "/alunos").permitAll()
+		.antMatchers(HttpMethod.GET, "/livros").hasAnyRole("ADMIN", "USER")
+		.antMatchers(HttpMethod.GET, "/livros/*").hasAnyRole("ADMIN", "USER")
+		.antMatchers(HttpMethod.GET, "/alunos/perfil").hasAnyRole("USER")
+		.antMatchers(HttpMethod.POST, "/reservas").hasAnyRole("ADMIN", "USER")
+		.anyRequest().hasRole("ADMIN")
 		.and().csrf().disable()
 		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and().addFilterBefore(new AutenticacaoViaTokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class);

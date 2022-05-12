@@ -9,7 +9,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 
 @Entity
-@PrimaryKeyJoinColumn(name="idPessoa")
+@PrimaryKeyJoinColumn(name="idUsuario")
 public class Aluno extends Usuario{
 	private static final long serialVersionUID = 1L;
 	

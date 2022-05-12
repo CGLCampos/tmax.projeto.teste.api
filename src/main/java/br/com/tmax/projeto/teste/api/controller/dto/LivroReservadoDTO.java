@@ -1,8 +1,8 @@
 package br.com.tmax.projeto.teste.api.controller.dto;
 
-import org.springframework.data.domain.Page;
-
 import br.com.tmax.projeto.teste.api.model.Livro;
+import br.com.tmax.projeto.teste.api.model.LivroReservado;
+import br.com.tmax.projeto.teste.api.util.DateUtil;
 
 public class LivroReservadoDTO {
 
@@ -10,16 +10,18 @@ public class LivroReservadoDTO {
 	private String titulo;
 	private String autor;
 	private String editora;
-	private String nomeCategoria;
-	
-	
-	public LivroReservadoDTO(Livro livro) {
-		super();
+	private String dataDevolucao = "Em aberto";
+
+	public LivroReservadoDTO(LivroReservado livroReservado) {
+		Livro livro = livroReservado.getLivro();
 		this.id = livro.getId();
 		this.titulo = livro.getTitulo();
 		this.autor = livro.getAutor();
 		this.editora = livro.getEditora();
-		this.nomeCategoria = livro.getCategoria().getNome();
+		if(livroReservado.getDataDevolucao() != null) {
+			this.dataDevolucao = DateUtil.localDateToString(livroReservado.getDataDevolucao().toLocalDate());
+		}
+
 	}
 
 	public Long getId() {
@@ -38,12 +40,10 @@ public class LivroReservadoDTO {
 		return editora;
 	}
 
-	public String getCategoria() {
-		return nomeCategoria;
+	public String getDataDevolucao() {
+		return dataDevolucao;
 	}
+
 	
-	public static Page<LivroReservadoDTO> converter(Page<Livro> livros) {
-		return livros.map(LivroReservadoDTO::new);
-	}
 
 }

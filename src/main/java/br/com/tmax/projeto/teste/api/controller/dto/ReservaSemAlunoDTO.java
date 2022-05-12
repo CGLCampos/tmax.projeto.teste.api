@@ -3,17 +3,13 @@ package br.com.tmax.projeto.teste.api.controller.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-
 import br.com.tmax.projeto.teste.api.model.LivroReservado;
 import br.com.tmax.projeto.teste.api.model.Reserva;
 import br.com.tmax.projeto.teste.api.util.DateUtil;
 
-public class ReservaDTO {
+public class ReservaSemAlunoDTO {
 
 	private Long id;
-
-	private AlunoDTO aluno;
 
 	private List<LivroReservadoDTO> listaLivros = new ArrayList<>();
 
@@ -22,10 +18,8 @@ public class ReservaDTO {
 	private boolean finalizado;
 	private String dataDevoluçãoEfetiva = "Em aberto";
 
-	public ReservaDTO(Reserva reserva) {
+	public ReservaSemAlunoDTO(Reserva reserva) {
 		this.id = reserva.getId();
-
-		this.aluno = new AlunoDTO(reserva.getAluno());
 
 		for (LivroReservado livroReservado : reserva.getLivrosReservados()) {
 			this.listaLivros.add(new LivroReservadoDTO(livroReservado));
@@ -43,10 +37,6 @@ public class ReservaDTO {
 		return id;
 	}
 
-	public AlunoDTO getAluno() {
-		return aluno;
-	}
-
 	public List<LivroReservadoDTO> getListaLivros() {
 		return listaLivros;
 	}
@@ -61,10 +51,6 @@ public class ReservaDTO {
 
 	public String getDataDevoluçãoEfetiva() {
 		return dataDevoluçãoEfetiva;
-	}
-
-	public static Page<ReservaDTO> converter(Page<Reserva> reservas) {
-		return reservas.map(ReservaDTO::new);
 	}
 
 }

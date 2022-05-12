@@ -35,7 +35,7 @@ public class AlunoCadastroForm {
 	
 	@NotEmpty 
 	@NotNull 
-	@Size(min=6)
+	@Size(min=5)
 	private String senha;
 	
 	public String getNome() {

@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,15 +16,20 @@ import javax.persistence.OneToMany;
 @Entity
 public class Reserva {
 
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private LocalDateTime dataReserva;
-	private LocalDateTime dataDevolucao;
-	@ManyToOne
-	private Aluno aluno;
 	
-	@OneToMany(mappedBy = "reserva")
-	private List<Livro> livros = new ArrayList<>();
+	@ManyToOne(fetch = FetchType.EAGER)
+	private Aluno aluno;
+
+	@OneToMany(mappedBy = "reserva", cascade = CascadeType.ALL)
+	private List<LivroReservado> livrosReservados = new ArrayList<>();
+	
+	private LocalDateTime dataReserva;
+
+	private boolean finalizado;
+	private LocalDateTime dataDevolucaoEfetiva;
 
 	public Long getId() {
 		return id;
@@ -40,12 +47,12 @@ public class Reserva {
 		this.dataReserva = dataReserva;
 	}
 
-	public LocalDateTime getDataDevolucao() {
-		return dataDevolucao;
+	public LocalDateTime getDataDevolucaoEfetiva() {
+		return dataDevolucaoEfetiva;
 	}
 
-	public void setDataDevolucao(LocalDateTime dataDevolucao) {
-		this.dataDevolucao = dataDevolucao;
+	public void setDataDevolucaoEfetiva(LocalDateTime dataDevolucaoEfetiva) {
+		this.dataDevolucaoEfetiva = dataDevolucaoEfetiva;
 	}
 
 	public Aluno getAluno() {
@@ -56,12 +63,20 @@ public class Reserva {
 		this.aluno = aluno;
 	}
 
-	public List<Livro> getLivros() {
-		return livros;
+	public List<LivroReservado> getLivrosReservados() {
+		return livrosReservados;
 	}
 
-	public void setLivros(List<Livro> livros) {
-		this.livros = livros;
+	public void setLivrosReservados(List<LivroReservado> livrosReservados) {
+		this.livrosReservados = livrosReservados;
+	}
+
+	public boolean estaFinalizado() {
+		return finalizado;
+	}
+
+	public void setFinalizado(boolean finalizado) {
+		this.finalizado = finalizado;
 	}
 
 }

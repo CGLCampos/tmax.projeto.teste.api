@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,11 +24,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.tmax.projeto.teste.api.controller.dto.LivroDTO;
+import br.com.tmax.projeto.teste.api.controller.dto.MensagemErroDTO;
+import br.com.tmax.projeto.teste.api.controller.dto.MensagemSucessoDTO;
 import br.com.tmax.projeto.teste.api.controller.form.LivroAtualizaForm;
 import br.com.tmax.projeto.teste.api.controller.form.LivroCadastroForm;
+import br.com.tmax.projeto.teste.api.model.Categoria;
 import br.com.tmax.projeto.teste.api.model.Livro;
 import br.com.tmax.projeto.teste.api.repository.CategoriaRepository;
 import br.com.tmax.projeto.teste.api.repository.LivroRepository;
+import br.com.tmax.projeto.teste.api.util.exceptions.ErroFormularioException;
+import br.com.tmax.projeto.teste.api.util.exceptions.NotFoundException;
 
 @RestController
 @RequestMapping("/livros")
@@ -39,66 +45,114 @@ public class LivroController {
 	private CategoriaRepository categoriaRepository;
 
 	@GetMapping
-	public Page<LivroDTO> listar(
+	public ResponseEntity<?> listar(
 			@PageableDefault(page=0, size=10, sort="id", direction=Direction.ASC) Pageable paginacao) {
+		try {
+			
+			Page<Livro> livros = livroRepository.findAll(paginacao);
+	
+			return ResponseEntity.ok(LivroDTO.converter(livros));
 		
-		Page<Livro> livros = livroRepository.findAll(paginacao);
-
-		return LivroDTO.converter(livros);
+		} catch(Throwable throwable) {
+			return ResponseEntity.badRequest().body(new MensagemErroDTO(throwable.getMessage()));
+		}
 	}
 
 	@PostMapping
 	@Transactional
-	public ResponseEntity<LivroDTO> cadastrar(
+	public ResponseEntity<?> cadastrar(
 			@RequestBody @Valid LivroCadastroForm form, 
 			UriComponentsBuilder uriBuilder) {
-
-		Livro livro = form.converter(categoriaRepository);
-		livroRepository.save(livro);
-
-		URI uri = uriBuilder.path("/livros/{id}").buildAndExpand(livro.getId()).toUri();
-		return ResponseEntity.created(uri).body(new LivroDTO(livro));
+		try {
+			
+			Optional<Categoria> optional = categoriaRepository.findById(form.getIdCategoria());
+			if (!optional.isPresent()) {
+				throw new ErroFormularioException("idCategoria", "A categoria informado não existe");
+			}
+			Categoria categoria = optional.get();
+			
+			Livro livro = form.converter(categoria);
+			livroRepository.save(livro);
+			
+			URI uri = uriBuilder.path("/livros/{id}").buildAndExpand(livro.getId()).toUri();
+			
+			return ResponseEntity.created(uri).body(new LivroDTO(livro));
+			
+		} catch(Throwable e) {
+			return ResponseEntity.badRequest().body(new MensagemErroDTO(e.getMessage()));
+		}
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<LivroDTO> mostrar(@PathVariable Long id) {
-		Optional<Livro> optional = livroRepository.findById(id);
-		if (!optional.isPresent()) {
-			return ResponseEntity.notFound().build();
+	public ResponseEntity<?> mostrar(@PathVariable Long id) {
+		try {
+			
+			Optional<Livro> optional = livroRepository.findById(id);
+			if (!optional.isPresent()) {
+				throw new NotFoundException("O livro informado não existe");
+			}
+		
+			return ResponseEntity.ok(new LivroDTO(optional.get()));
+			
+		} catch(NotFoundException exception) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MensagemErroDTO(exception.getMessage()));
+		} catch(Throwable throwable) {
+			return ResponseEntity.badRequest().body(new MensagemErroDTO(throwable.getMessage()));
 		}
-		return ResponseEntity.ok(new LivroDTO(optional.get()));
 	}
 
 	@PutMapping("/{id}")
 	@Transactional
-	public ResponseEntity<LivroDTO> atualizar(
+	public ResponseEntity<?> atualizar(
 			@PathVariable Long id, 
 			@RequestBody @Valid LivroAtualizaForm form,
 			UriComponentsBuilder uriBuilder) {
+		try {
 
-		Optional<Livro> optional = livroRepository.findById(id);
-		if (!optional.isPresent()) {
-			return ResponseEntity.notFound().build();
-		} 
-		Livro livro = form.converter(optional.get(), categoriaRepository);
-		return ResponseEntity.ok(new LivroDTO(livro));
-
+			Optional<Livro> optionalLivro = livroRepository.findById(id);
+			if (!optionalLivro.isPresent()) {
+				throw new NotFoundException("O livro informado não existe");
+			} 
+			Livro livro = optionalLivro.get();
+			
+			Optional<Categoria> optionalCategoria = categoriaRepository.findById(form.getIdCategoria());
+			if (!optionalCategoria.isPresent()) {
+				throw new NotFoundException("A categoria informado não existe");
+			}
+			Categoria categoria = optionalCategoria.get();
+			
+			return ResponseEntity.ok(new LivroDTO(form.converter(livro, categoria)));
+			
+		}catch(NotFoundException exception) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MensagemErroDTO(exception.getMessage()));
+		} catch(Throwable throwable) {
+			return ResponseEntity.badRequest().body(new MensagemErroDTO(throwable.getMessage()));
+		}
 	}
 
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> remover(@PathVariable Long id) {
-		
-		Optional<Livro> optional = livroRepository.findById(id);
-		if (!optional.isPresent()) {
-			return ResponseEntity.notFound().build();
-		}	
-		if (optional.get().getReserva() != null) {
-			String msg = "O livro está reservado e não pode ser removido.";
-			return ResponseEntity.badRequest().body(msg);
+		try {
+			
+			Optional<Livro> optional = livroRepository.findById(id);
+			if (!optional.isPresent()) {
+				throw new NotFoundException("O livro informado não existe");
+			}
+			Livro livro = optional.get();
+					
+			if (livro.estaReservado()) {
+				String msg = "O livro está reservado e não pode ser removido.";
+				return ResponseEntity.badRequest().body(new MensagemErroDTO(msg));
+			}
+			
+			livroRepository.delete(livro);
+			return ResponseEntity.ok(new MensagemSucessoDTO("Livro removido com sucesso."));
+			
+		}catch(NotFoundException exception) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MensagemErroDTO(exception.getMessage()));
+		} catch(Throwable throwable) {
+			return ResponseEntity.badRequest().body(new MensagemErroDTO(throwable.getMessage()));
 		}
-		
-		livroRepository.deleteById(id);
-		return ResponseEntity.ok("Livro removido com sucesso.");
 	}
 }

@@ -5,7 +5,6 @@ import javax.validation.constraints.NotNull;
 
 import br.com.tmax.projeto.teste.api.model.Categoria;
 import br.com.tmax.projeto.teste.api.model.Livro;
-import br.com.tmax.projeto.teste.api.repository.CategoriaRepository;
 
 public class LivroCadastroForm {
 
@@ -67,9 +66,7 @@ public class LivroCadastroForm {
 		this.idCategoria = idCategoria;
 	}
 
-	public Livro converter(CategoriaRepository categoriaRepository) {
-		System.out.println("ID DA CATEGORIA: " + idCategoria);
-		Categoria categoria = categoriaRepository.findById(idCategoria).get();
+	public Livro converter(Categoria categoria) {
 		Livro livro = new Livro();
 		livro.setTitulo(this.titulo);
 		livro.setAutor(this.autor);
@@ -77,6 +74,7 @@ public class LivroCadastroForm {
 		livro.setEditora(this.editora);
 		livro.setDataPublicacao(this.dataPublicacao);
 		livro.setCategoria(categoria);
+		livro.setReserva(null);
 
 		return livro;
 	}

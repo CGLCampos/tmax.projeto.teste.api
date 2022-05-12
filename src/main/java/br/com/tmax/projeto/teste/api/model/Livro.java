@@ -22,16 +22,8 @@ public class Livro {
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Categoria categoria;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	private Reserva reserva;
-
-	public boolean estaReservado() {
-		return this.getReserva() != null;
-	}
-
-	public void devolver() {
-		this.reserva = null;
-	}
 
 	public Long getId() {
 		return id;
@@ -95,6 +87,14 @@ public class Livro {
 
 	public void setReserva(Reserva reserva) {
 		this.reserva = reserva;
+	}
+	
+	public void devolver() {
+		this.setReserva(null);
+	}
+
+	public boolean estaReservado() {
+		return reserva != null;
 	}
 
 }
